@@ -16,7 +16,7 @@ def printProgress(iteration, total, prefix='', suffix='', decimals=1, barLength=
     sys.stdout.flush()
 
 class SLR_ME:
-    def __init__(self, y, w, iteration, burnin, thinning, add_chains=False):
+    def __init__(self, y, w, s2_v, iteration, burnin, thinning, add_chains=False):
         """
         Simple Linear Regression with measurement error
         implemented through gibbs sampling.
@@ -42,6 +42,7 @@ class SLR_ME:
         """
         self.y = y
         self.w = w
+        self.s2_v = s2_v
         self.n = len(y)
         self.iteration = iteration
         self.burnin = burnin
@@ -214,7 +215,7 @@ class SLR_ME:
         n = self.n
 
         s2_ep = self.params['s2_ep'][-1]
-        s2_v = self.params['s2_v'][-1]
+        s2_v = self.s2_v
         mu_x = self.params['mu_x'][-1]
         s2_x = self.params['s2_x'][-1]
 
@@ -255,7 +256,7 @@ class SLR_ME:
             self._sampling_s2_ep()
             self._sampling_mu_x()
             self._sampling_s2_x()
-            self._sampling_s2_v()
+            # self._sampling_s2_v()
             self._sampling_x()
 
             printProgress(i, iteration, 'Progress:', 'Complete', 1, 100)
