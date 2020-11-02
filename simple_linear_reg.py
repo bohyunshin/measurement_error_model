@@ -65,9 +65,9 @@ class SLR_ME:
         print(f'Total number of iterations: {self.iteration}')
         print(f'Burn-in periods: {self.burnin}')
 
-        self.s2_beta = 10**2
-        self.s2_mu_x = 10**2
-        self.A_x = self.B_x = self.A_v = self.B_v = self.A_ep = self.B_ep = 0.5
+        self.s2_beta = 100**2
+        self.s2_mu_x = 100**2
+        self.A_x = self.B_x = self.A_v = self.B_v = self.A_ep = self.B_ep = 0.001
 
         # params_name = ['beta0','beta1','mu_x', 's2_x', 's2_ep', 's2_v', 'x']
         #
@@ -78,12 +78,12 @@ class SLR_ME:
 
         self.params = {}
         # initialize parameters
-        self.params['beta0'] = [1]
-        self.params['beta1'] = [1]
+        self.params['beta0'] = [5]
+        self.params['beta1'] = [-5]
         self.params['mu_x']  = [np.mean(self.w)]
-        self.params['s2_x']  = [1]
-        self.params['s2_ep'] = [1]
-        self.params['s2_v']  = [1]
+        self.params['s2_x']  = [0.5]
+        self.params['s2_ep'] = [0.5]
+        self.params['s2_v']  = [0.5]
         self.params['x'] = np.random.normal(np.mean(self.w), 1, size=self.n)
 
     def _sampling_beta(self):

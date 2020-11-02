@@ -3,8 +3,8 @@ from simple_linear_reg import SLR_ME
 import pickle
 
 # generate toy data
-beta0 = -1
-beta1 = 1
+beta0 = -5
+beta1 = 3
 mu_x = 1/2
 s2_x = 1/36
 s2_ep = 0.35
@@ -22,10 +22,10 @@ y = beta0 + beta1*x + ep
 
 print(x[:5])
 
-# mod = SLR_ME(y,w,s2_v, 10000,100, thinning=50)
-# mod.fit()
-#
-# pickle.dump(mod, open('../model/mem_result_without_s2_v_0.5.pkl','wb'))
+mod = SLR_ME(y,w,s2_v, 10000,100, thinning=50)
+mod.fit()
+
+pickle.dump(mod, open('../model/mem_result_without_s2_v_0.5_.pkl','wb'))
 #
 # # mcmc = pickle.load(open('./result.pkl','rb'))
 # # print(np.mean(mcmc.params['s2_v']))
