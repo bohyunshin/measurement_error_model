@@ -16,7 +16,7 @@ def printProgress(iteration, total, prefix='', suffix='', decimals=1, barLength=
     sys.stdout.flush()
 
 class SLR_ME:
-    def __init__(self, y, w, iteration, burnin, thinning, add_chains=False):
+    def __init__(self, y, w, z, act_params, iteration, burnin, thinning, add_chains=False):
         """
         Simple Linear Regression with measurement error
         implemented through gibbs sampling.
@@ -42,11 +42,13 @@ class SLR_ME:
         """
         self.y = y
         self.w = w
+        self.z = z
         self.n = len(y)
         self.iteration = iteration
         self.burnin = burnin
         self.add_chains = add_chains
         self.thinning = thinning
+        self.act_params = act_params
 
     def _init_prior(self):
         """
@@ -64,9 +66,9 @@ class SLR_ME:
         print(f'Total number of iterations: {self.iteration}')
         print(f'Burn-in periods: {self.burnin}')
 
-        self.s2_beta = 10**2
-        self.s2_mu_x = 10**2
-        self.A_x = self.B_x = self.A_v = self.B_v = self.A_ep = self.B_ep = 0.5
+        self.s2_beta = 10**8
+        self.s2_mu_x = 10**8
+        self.A_x = self.B_x = self.A_v = self.B_v = self.A_d = self.B_d = self.A_ep = self.B_ep = 0.001
 
         # params_name = ['beta0','beta1','mu_x', 's2_x', 's2_ep', 's2_v', 'x']
         #
@@ -77,12 +79,13 @@ class SLR_ME:
 
         self.params = {}
         # initialize parameters
-        self.params['beta0'] = [1]
-        self.params['beta1'] = [1]
+        self.params['beta0'] = [-2]
+        self.params['beta1'] = [2]
         self.params['mu_x']  = [np.mean(self.w)]
         self.params['s2_x']  = [1]
         self.params['s2_ep'] = [1]
         self.params['s2_v']  = [1]
+        self.params['s2_d']  = [1]
         self.params['x'] = np.random.normal(np.mean(self.w), 1, size=self.n)
 
     def _sampling_beta(self):
@@ -104,7 +107,8 @@ class SLR_ME:
                      np.dot(X.T, y))/s2_ep
         cov = temp
         # sampling from full conditionals
-        beta0, beta1 = np.random.multivariate_normal(mu, cov, 1).T
+        beta0, beta1 = np.random.\
+            multivariate_normal(mu, cov, 1).T
 
         # update posterior samples
         self.params['beta0'].append(beta0[0])
@@ -205,25 +209,49 @@ class SLR_ME:
         # update posterior samples
         self.params['s2_v'].append(s2_v)
 
+    def _sampling_s2_d(self):
+
+        A_d = self.A_d
+        B_d = self.B_d
+        n = self.n
+        z = self.z
+
+        if self.current_iteration == 0:
+            x = self.params['x']
+        else:
+            x = self.params['x'][:, (self.params['x'].shape[1] - 1) ]
+
+        # parameters of full conditionals
+        shape = A_d + n/2
+        scale = B_d + np.dot(z-x, z-x)/2
+
+        # sampling from full conditionals
+        s2_d = invgamma.rvs(a=shape, scale=scale, size=1)[0]
+
+        # update posterior samples
+        self.params['s2_d'].append(s2_d)
+
     def _sampling_x(self):
 
         beta0 = self.params['beta0'][-1]
         beta1 = self.params['beta1'][-1]
         y = self.y
         w = self.w
+        z = self.z
         n = self.n
 
         s2_ep = self.params['s2_ep'][-1]
         s2_v = self.params['s2_v'][-1]
+        s2_d = self.params['s2_d'][-1]
         mu_x = self.params['mu_x'][-1]
         s2_x = self.params['s2_x'][-1]
 
-        denom = beta1**2/s2_ep + 1/s2_v + 1/s2_x
+        denom = beta1**2/s2_ep + 1/s2_v + 1/s2_d + 1/s2_x
 
         x = []
 
         for i in range(n):
-            num = beta1*( y[i]-beta0 )/s2_ep + w[i]/s2_v + mu_x/s2_x
+            num = beta1*( y[i]-beta0 )/s2_ep + w[i]/s2_v + z[i]/s2_d + mu_x/s2_x
 
             # parameters of full conditionals
             mu = num/denom
@@ -256,6 +284,7 @@ class SLR_ME:
             self._sampling_mu_x()
             self._sampling_s2_x()
             self._sampling_s2_v()
+            self._sampling_s2_d()
             self._sampling_x()
 
             printProgress(i, iteration, 'Progress:', 'Complete', 1, 100)
