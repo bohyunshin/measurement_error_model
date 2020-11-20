@@ -66,9 +66,9 @@ class SLR_ME:
         print(f'Total number of iterations: {self.iteration}')
         print(f'Burn-in periods: {self.burnin}')
 
-        self.s2_beta = 10**8
-        self.s2_mu_x = 10**8
-        self.A_x = self.B_x = self.A_v = self.B_v = self.A_d = self.B_d = self.A_ep = self.B_ep = 0.001
+        self.s2_beta = 10
+        self.s2_mu_x = 10
+        self.A_x = self.B_x = self.A_v = self.B_v = self.A_d = self.B_d = self.A_ep = self.B_ep = 0.1
 
         # params_name = ['beta0','beta1','mu_x', 's2_x', 's2_ep', 's2_v', 'x']
         #

@@ -13,6 +13,7 @@ ep = np.random.normal(0, np.sqrt(s2_ep), n)
 # observed
 x = np.random.uniform(10, 40, 120)
 y = beta0 + beta1*x + ep
+x = x - np.mean(x)
 
 print(x[:5])
 print(y[:5])

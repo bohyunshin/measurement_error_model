@@ -6,10 +6,10 @@ import pickle
 beta0 = -1
 beta1 = 1
 mu_x = 1/2
-s2_x = 1/36
-s2_ep = 0.35
-s2_v = 1/36
-s2_d = 1/100
+s2_x = 1
+s2_ep = 1
+s2_v = 1
+s2_d = 1
 n = 120
 
 print(f'RR: {(s2_x)/(s2_x + s2_v)}')
