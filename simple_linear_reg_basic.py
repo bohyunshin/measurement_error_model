@@ -44,6 +44,7 @@ class SLR_BASIC:
         self.n = len(y)
         one_vec = np.ones(self.n)
         self.X = np.c_[one_vec, x]
+        self.k = self.X.shape[1]
         self.iteration = iteration
         self.burnin = burnin
         self.add_chains = add_chains
@@ -66,9 +67,9 @@ class SLR_BASIC:
         print(f'Total number of iterations: {self.iteration}')
         print(f'Burn-in periods: {self.burnin}')
 
-        self.s2_beta = 10**8
-        self.s2_mu_x = 10**8
-        self.A_ep = self.B_ep = 0.001
+        self.s2_beta = 10
+        self.s2_mu_x = 10
+        self.A_ep = self.B_ep = 0.1
 
         # params_name = ['beta0','beta1','mu_x', 's2_x', 's2_ep', 's2_v', 'x']
         #
@@ -96,6 +97,10 @@ class SLR_BASIC:
         mu = np.dot( temp ,
                      np.dot(X.T, y))/s2_ep
         cov = temp
+
+        # mu = np.dot(np.linalg.inv(XTX) / s2_ep,  np.dot(X.T, y) / s2_beta ) / s2_ep
+        # cov = np.linalg.inv(XTX) * s2_ep / 2
+
         # sampling from full conditionals
         beta0, beta1 = np.random.\
             multivariate_normal(mu, cov, 1).T
@@ -111,6 +116,8 @@ class SLR_BASIC:
 
         y = self.y
         X = self.X
+        XTX = np.dot(X.T, X)
+        k = self.k
 
         beta0 = self.params['beta0'][-1]
         beta1 = self.params['beta1'][-1]
