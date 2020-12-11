@@ -1,22 +1,19 @@
 import numpy as np
-from simple_linear_reg_basic import SLR_BASIC
+from simple_linear_reg_basic_uniform_prior import SLR_BASIC
 import pickle
 
 # generate toy data
 beta0 = -1
 beta1 = 1
 s2_ep = 1
-n = 12000
+n = 120
 
-np.random.seed(1)
+
 ep = np.random.normal(0, np.sqrt(s2_ep), n)
 # observed
 x = np.random.uniform(10, 40, n)
 y = beta0 + beta1*x + ep
 
-
-print(x[:5])
-print(y[:5])
 act_params = {
     'ep':ep,  'y':y,
     'beta0':beta0, 'beta1':beta1,
@@ -25,7 +22,7 @@ act_params = {
 mod = SLR_BASIC(y,x,act_params,10000,100, thinning=50)
 mod.fit()
 
-pickle.dump(mod, open('../model/SLR_basic_12000.pkl','wb'))
+pickle.dump(mod, open('../model/SLR_basic_120.pkl','wb'))
 
 # mcmc = pickle.load(open('./result.pkl','rb'))
 # print(np.mean(mcmc.params['s2_v']))
