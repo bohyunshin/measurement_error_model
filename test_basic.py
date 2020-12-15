@@ -1,5 +1,5 @@
 import numpy as np
-from simple_linear_reg_basic_uniform_prior import SLR_BASIC
+from simple_linear_reg_basic_jeffrey_prior import SLR_BASIC
 import pickle
 
 # generate toy data
