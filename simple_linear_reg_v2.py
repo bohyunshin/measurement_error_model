@@ -283,6 +283,7 @@ class SLR_ME:
 
         beta0 = self.params['beta0'][-1]
         beta1 = self.params['beta1'][-1]
+        gam0 = self.params['gam0'][-1]
         gam1 = self.params['gam1'][-1]
         y = self.y
         w = self.w
@@ -300,7 +301,7 @@ class SLR_ME:
         x = []
 
         for i in range(n):
-            num = beta1*( y[i]-beta0 )/s2_ep + w[i]/s2_v + gam1*z[i]/s2_d + mu_x/s2_x
+            num = beta1*( y[i]-beta0 )/s2_ep + w[i]/s2_v + gam1*( z[i] - gam0 )/s2_d + mu_x/s2_x
 
             # parameters of full conditionals
             mu = num/denom
